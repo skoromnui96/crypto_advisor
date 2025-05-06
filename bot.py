@@ -3,11 +3,12 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.types import Message
 from aiogram.filters import Command
 import asyncio
+import os
 
-from config import BOT_TOKEN
 from binance_api import get_price
 from gpt import get_crypto_recommendation
 
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
