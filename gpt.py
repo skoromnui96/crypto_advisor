@@ -1,22 +1,29 @@
 import os
-from openai import OpenAI
+import requests
 
-client = OpenAI(
-    api_key=os.getenv("OPENROUTER_API_KEY"),
-    base_url="https://openrouter.ai/api/v1"
-)
+API_KEY = os.getenv("OPENROUTER_API_KEY")
+API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
-def get_crypto_recommendation(symbol: str, pr: float) -> str:
-    prompt = f"""
-    Ты финансовый советник. Дай краткую рекомендацию по криптовалюте {symbol}.
-    Текущая цена: ${price:.2f}.
-    Укажи, стоит ли покупать, продавать или удерживать актив и почему.
-    """
+def get_crypto_recommendation(symbol: str, price: float) -> str:
+    headers = {
+        "Authorization": f"Bearer {API_KEY}",
+        "Content-Type": "application/json"
+    }
 
-    response = client.chat.completions.create(
-        model="mistralai/mistral-7b-instruct",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.7
-    )
+    data = {
+        "model": "mistralai/mistral-7b-instruct",  # можно заменить
+        "messages": [
+            {"role": "user", "content": f"""
+            Ты финансовый советник. Дай краткую рекомендацию по криптовалюте {symbol}.
+            Текущая цена: ${price:.2f}.
+            Укажи, стоит ли покупать, продавать или удерживать актив и почему.
+            """}
+        ]
+    }
 
-    return response.choices[0].message.content.strip()
+    response = requests.post(API_URL, headers=headers, json=data)
+
+    if response.status_code == 200:
+        return response.json()["choices"][0]["message"]["content"].strip()
+    else:
+        return f"Ошибка OpenRouter: {response.status_code} — {response.text}"
