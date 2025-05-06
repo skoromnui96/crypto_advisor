@@ -11,7 +11,7 @@ def get_crypto_recommendation(symbol: str, price: float) -> str:
     }
 
     data = {
-        "model": "mistralai/mistral-7b-instruct",  # можно заменить
+        "model": "openchat/openchat-3.5",  # можно заменить
         "messages": [
             {"role": "user", "content": f"""
             Ты финансовый советник. Дай краткую рекомендацию по криптовалюте {symbol}.
