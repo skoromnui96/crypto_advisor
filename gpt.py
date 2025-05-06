@@ -1,7 +1,7 @@
+import openai
 import os
-from openai import OpenAI
 
-client = OpenAI()  # API-ключ берется автоматически из переменной окружения
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def get_crypto_recommendation(symbol: str, price: float) -> str:
     prompt = f"""
@@ -10,12 +10,10 @@ def get_crypto_recommendation(symbol: str, price: float) -> str:
     Укажи, стоит ли покупать, продавать или удерживать актив и почему.
     """
 
-    response = client.chat.completions.create(
-        model="gpt-4",  # или "gpt-3.5-turbo"
-        messages=[
-            {"role": "user", "content": prompt}
-        ],
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[{"role": "user", "content": prompt}],
         temperature=0.7
     )
 
-    return response.choices[0].message.content.strip()
+    return response['choices'][0]['message']['content'].strip()
